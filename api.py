@@ -1,19 +1,23 @@
-# main.py
-
 import json
 import numpy as np
 import pandas as pd
 import pickle
+import gzip  # Import gzip module for reading compressed files
 from flask import Flask, request, jsonify
 import random
 from remarks import remarks_dict  # Importing the remarks dictionary
 
 app = Flask(__name__)
 
-# Load the machine learning model
-with open("model.pkl", "rb") as f:
-    clf = pickle.load(f)
-    clf.feature_names_in_ = None
+# Load the compressed machine learning model
+def load_compressed_model(file_path):
+    with gzip.open(file_path, 'rb') as f:
+        model = pickle.load(f)
+    return model
+
+compressed_model_path = "model.pkl.gz"
+clf = load_compressed_model(compressed_model_path)
+clf.feature_names_in_ = None
 
 # Function to select a random remark from each group based on the prediction value
 def select_random_remark(prediction):
